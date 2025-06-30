@@ -2,10 +2,10 @@ from datetime import datetime, timezone
 
 import humanize
 
-humanize.i18n.activate("pt_BR")  # type: ignore
-
 
 def relative_time(label: str, dt: datetime):
+    humanize.i18n.activate("pt_BR")  # type: ignore
+
     if not dt:
         return {
             "body": f"**{label}:** N/A",

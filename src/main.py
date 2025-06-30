@@ -132,9 +132,8 @@ st.html("""
 
     /* Secondary button focus state */
     .stFileUploader button:focus {
-        background-color: rgb(0, 161, 252) !important;
         border-color: rgb(0, 161, 252) !important;
-        color: white !important;
+        color: black !important;
     }
 </style>
 """)
