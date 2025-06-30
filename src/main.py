@@ -36,6 +36,9 @@ def executions_section():
                         unsafe_allow_html=True,
                     )
                     dfs = dataframes(execution.input_file)
+                    if not dfs:
+                        st.warning("Nenhum resultado encontrado")
+                        return
                     tabs = st.tabs(list(dfs.keys()))  # type: ignore
                     for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
                         with tab:
@@ -46,6 +49,9 @@ def executions_section():
                         unsafe_allow_html=True,
                     )
                     dfs = dataframes(execution.output_file)
+                    if not dfs:
+                        st.warning("Nenhum resultado encontrado")
+                        return
                     tabs = st.tabs(list(dfs.keys()))  # type: ignore
                     for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
                         with tab:
