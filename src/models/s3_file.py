@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -10,4 +10,4 @@ class S3File(BaseModel):
     uuid: Optional[str]
     last_modified: Optional[datetime]
     url: Optional[str]
-    content: Optional[str] = None
+    content: Optional[Any] = None

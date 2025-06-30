@@ -23,10 +23,10 @@ class ExecutionsService:
         executions = []
         for uuid, files in grouped_files.items():
             input_file = next(
-                (f for f in files if f.key and f.key.endswith("input.csv")), None
+                (f for f in files if f.key and f.key.endswith("input.xlsx")), None
             )
             output_file = next(
-                (f for f in files if f.key and f.key.endswith("output.csv")), None
+                (f for f in files if f.key and f.key.endswith("output.xlsx")), None
             )
             executions.append(
                 Execution(
@@ -61,11 +61,11 @@ class ExecutionsService:
 
         def _after_execution_callback(uuid: str, response):
             result_dict = json.loads(response["result"])
-            file = b64decode(result_dict["result_csv_base64"])
-            self.s3.upload_file(file, uuid, "output.csv")
+            file = b64decode(result_dict["output_file"])
+            self.s3.upload_file(file, uuid, "output.xlsx")
 
         uuid = str(uuid4())
-        self.s3.upload_file(file, uuid, "input.csv")
+        self.s3.upload_file(file, uuid, "input.xlsx")
         kickoff_response = self.crewai.kickoff(uuid, b64encode(file).decode("utf-8"))
         kickoff_id = kickoff_response["kickoff_id"]
         return ThreadPoolExecutor(max_workers=3).submit(_run_async_status)

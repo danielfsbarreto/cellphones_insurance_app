@@ -9,13 +9,13 @@ class CrewAiClient:
     CREWAI_API_URL = os.getenv("CREWAI_URL")
     CREWAI_API_BEARER_TOKEN = os.getenv("CREWAI_API_BEARER_TOKEN")
 
-    def kickoff(self, id: str, companies_csv_base64: str):
+    def kickoff(self, id: str, input_file_base64: str):
         response = requests.post(
             f"{self.CREWAI_API_URL}/kickoff",
             json={
                 "inputs": {
                     "id": id,
-                    "companies_csv_base64": companies_csv_base64,
+                    "input_file": input_file_base64,
                 }
             },
             headers=self._headers,

@@ -31,7 +31,7 @@ class S3Client:
                     file_response = self.s3.get_object(
                         Bucket=self.bucket_name, Key=obj["Key"]
                     )
-                    file_content = file_response["Body"].read().decode("utf-8")
+                    file_content = file_response["Body"].read()
                 except Exception as e:
                     print(f"Error reading content for {obj['Key']}: {e}")
                     file_content = None

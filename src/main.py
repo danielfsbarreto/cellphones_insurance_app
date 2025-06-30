@@ -1,7 +1,7 @@
 import streamlit as st
 
 from services import ExecutionsService
-from utils import download_link, relative_time, render_badge, render_table
+from utils import dataframes, download_link, relative_time, render_badge
 
 if "executions" not in st.session_state:
     st.session_state.executions = []
@@ -21,12 +21,12 @@ def executions_section():
                 first_column, second_column = st.columns(2)
                 with first_column:
                     st.markdown(
-                        **relative_time("Inicializada em", execution.started_at)  # type: ignore
+                        **relative_time("Inicializada", execution.started_at)  # type: ignore
                     )
                     st.badge(**render_badge(execution))  # type: ignore
                 with second_column:
                     st.markdown(
-                        **relative_time("Concluída em", execution.completed_at)  # type: ignore
+                        **relative_time("Concluída", execution.completed_at)  # type: ignore
                     )
 
                 input_tab, output_tab = st.tabs(["Entrada", "Saída"])
@@ -35,13 +35,21 @@ def executions_section():
                         f"**Download:** {download_link(execution.input_file)}",
                         unsafe_allow_html=True,
                     )
-                    st.dataframe(render_table(execution.input_file))
+                    dfs = dataframes(execution.input_file)
+                    tabs = st.tabs(list(dfs.keys()))  # type: ignore
+                    for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
+                        with tab:
+                            st.dataframe(df)
                 with output_tab:
                     st.markdown(
                         f"**Download:** {download_link(execution.output_file)}",
                         unsafe_allow_html=True,
                     )
-                    st.dataframe(render_table(execution.output_file))
+                    dfs = dataframes(execution.output_file)
+                    tabs = st.tabs(list(dfs.keys()))  # type: ignore
+                    for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
+                        with tab:
+                            st.dataframe(df)
 
 
 st.html("""
@@ -152,14 +160,7 @@ with st.sidebar:
         )
 
 with st.container():
-    header_column, button_column = st.columns([9, 1])
-    with header_column:
-        st.subheader("Análise Mercadológica de Aparelhos Celulares")
-    with button_column:
-        st.markdown('<div class="header-container">', unsafe_allow_html=True)
-        st.button("", icon=":material/refresh:")
-        st.markdown("</div>", unsafe_allow_html=True)
-
+    st.subheader("Análise Mercadológica de Aparelhos Celulares")
     executions_section()
 
 with st._bottom:
@@ -172,8 +173,8 @@ with st._bottom:
     )
 
 if st.session_state.file_uploader is not None:
-    companies_csv = st.session_state.file_uploader.getvalue()
-    ExecutionsService().start_execution(companies_csv)
+    celphones_spreadsheet = st.session_state.file_uploader.getvalue()
+    ExecutionsService().start_execution(celphones_spreadsheet)
     st.toast(
         "Execução iniciada! Recarregue a página para ver os resultados.",
         icon=":material/refresh:",

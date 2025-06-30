@@ -4,12 +4,12 @@ from models import Execution
 def render_badge(execution: Execution):
     return {
         "pending": {
-            "label": "Pending",
+            "label": "Pendente",
             "icon": ":material/schedule:",
             "color": "orange",
         },
         "completed": {
-            "label": "Completed",
+            "label": "Sucesso",
             "icon": ":material/check:",
             "color": "green",
         },
