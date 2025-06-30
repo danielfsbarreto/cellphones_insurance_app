@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import humanize
 
@@ -16,5 +16,7 @@ def relative_time(label: str, dt: datetime):
 
     return {
         "body": f"**{label}:** {humanize.naturaltime(diff)}",
-        "help": dt.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "help": dt.astimezone(timezone(timedelta(hours=-3))).strftime(
+            "%Y-%m-%d %H:%M:%S UTC-3"
+        ),
     }
