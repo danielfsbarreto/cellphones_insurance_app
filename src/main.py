@@ -9,6 +9,16 @@ if "executions" not in st.session_state:
 
 @st.fragment
 def executions_section():
+    header_column, button_column = st.columns([11, 1])
+    with header_column:
+        st.subheader("Análise Mercadológica de Aparelhos Celulares")
+    with button_column:
+        st.markdown(
+            "<div class='button-column'>",
+            unsafe_allow_html=True,
+        )
+        st.button("", icon=":material/refresh:", help="", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     st.session_state.executions = ExecutionsService().list_executions()
 
     if not st.session_state.executions:
@@ -38,11 +48,11 @@ def executions_section():
                     dfs = dataframes(execution.input_file)
                     if not dfs:
                         st.warning("Nenhum resultado encontrado")
-                        return
-                    tabs = st.tabs(list(dfs.keys()))  # type: ignore
-                    for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
-                        with tab:
-                            st.dataframe(df)
+                    else:
+                        tabs = st.tabs(list(dfs.keys()))  # type: ignore
+                        for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
+                            with tab:
+                                st.dataframe(df)
                 with output_tab:
                     st.markdown(
                         f"**Download:** {download_link(execution.output_file)}",
@@ -51,11 +61,11 @@ def executions_section():
                     dfs = dataframes(execution.output_file)
                     if not dfs:
                         st.warning("Nenhum resultado encontrado")
-                        return
-                    tabs = st.tabs(list(dfs.keys()))  # type: ignore
-                    for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
-                        with tab:
-                            st.dataframe(df)
+                    else:
+                        tabs = st.tabs(list(dfs.keys()))  # type: ignore
+                        for tab, (_, df) in zip(tabs, dfs.items()):  # type: ignore
+                            with tab:
+                                st.dataframe(df)
 
 
 st.html("""
@@ -74,6 +84,19 @@ st.html("""
         justify-content: space-between;
         align-items: center;
         width: 100%;
+    }
+
+    /* Button column flex positioning */
+    .button-column {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .button-column > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     /* Target all Streamlit buttons */
@@ -165,7 +188,6 @@ with st.sidebar:
         )
 
 with st.container():
-    st.subheader("Análise Mercadológica de Aparelhos Celulares")
     executions_section()
 
 with st._bottom:
