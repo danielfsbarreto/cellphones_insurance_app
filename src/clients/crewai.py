@@ -23,29 +23,28 @@ class CrewAiClient:
         response.raise_for_status()
         return response.json()
 
-    async def status(self, id: str):
-        max_attempts = 120
-        attempts = 0
-
+    async def status(self, kickoff_id: str):
         async with aiohttp.ClientSession() as session:
-            while attempts < max_attempts:
+            while True:
                 try:
                     async with session.get(
-                        f"{self.CREWAI_API_URL}/status/{id}", headers=self._headers
+                        f"{self.CREWAI_API_URL}/status/{kickoff_id}",
+                        headers=self._headers,
                     ) as response:
                         response.raise_for_status()
                         response_json = await response.json()
 
-                        if response_json.get("state") == "SUCCESS":
+                        if response_json.get("state") in ["SUCCESS", "FAILURE"]:
                             return response_json
 
-                        await asyncio.sleep(1)
-                        attempts += 1
+                        print(
+                            f"Status check performed for [kickoff_id='{kickoff_id}']. No final state reached yet."
+                        )
+                        await asyncio.sleep(60)
 
                 except Exception as e:
                     print(f"Error checking status: {e}")
-                    await asyncio.sleep(1)
-                    attempts += 1
+                    await asyncio.sleep(60)
 
     @property
     def _headers(self):

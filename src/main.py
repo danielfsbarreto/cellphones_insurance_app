@@ -1,7 +1,7 @@
 import streamlit as st
 
 from services import ExecutionsService
-from utils import dataframes, download_link, relative_time, render_badge
+from utils import dataframes, download_link, duration, relative_time, render_badge
 
 if "executions" not in st.session_state:
     st.session_state.executions = []
@@ -36,7 +36,14 @@ def executions_section():
                     st.badge(**render_badge(execution))  # type: ignore
                 with second_column:
                     st.markdown(
-                        **relative_time("Concluída", execution.completed_at)  # type: ignore
+                        **relative_time("Concluída", execution.completed_at),  # type: ignore
+                    )
+                    st.markdown(
+                        **duration(
+                            "Duração",
+                            execution.started_at,  # type: ignore
+                            execution.completed_at,  # type: ignore
+                        ),
                     )
 
                 input_tab, output_tab = st.tabs(["Entrada", "Saída"])

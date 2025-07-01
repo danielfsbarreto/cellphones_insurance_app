@@ -47,22 +47,21 @@ class ExecutionsService:
                 response = asyncio.run(_check_status_async(kickoff_id))
                 _after_execution_callback(uuid, response)
             except Exception as e:
-                print(f"Error checking status for {uuid}: {e}")
+                print(
+                    f"Error checking status for [kickoff_id='{kickoff_id}', uuid='{uuid}']: {e}"
+                )
                 raise e
 
-        async def _check_status_async(uuid: str):
-            try:
-                response = await self.crewai.status(uuid)
-                print(f"Status check completed for {uuid}")
-                return response
-            except Exception as e:
-                print(f"Error checking status for {uuid}: {e}")
-                return None
+        async def _check_status_async(kickoff_id: str):
+            return await self.crewai.status(kickoff_id)
 
         def _after_execution_callback(uuid: str, response):
             result_dict = json.loads(response["result"])
             file = b64decode(result_dict["output_file"])
             self.s3.upload_file(file, uuid, "output.xlsx")
+            print(
+                f"Execution successfully completed for [kickoff_id='{kickoff_id}', uuid='{uuid}']"
+            )
 
         uuid = str(uuid4())
         self.s3.upload_file(file, uuid, "input.xlsx")
