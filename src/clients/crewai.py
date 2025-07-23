@@ -6,13 +6,15 @@ import requests
 
 
 class CrewAiClient:
-    _URL = os.getenv("CREWAI_ENTERPRISE_URL")
-    _API_KEY = os.getenv("CREWAI_ENTERPRISE_API_KEY")
-    _POLLING_RATE = int(os.getenv("CREWAI_ENTERPRISE_POLLING_RATE", 10))
+    CREWAI_ENTERPRISE_URL = os.getenv("CREWAI_ENTERPRISE_URL")
+    CREWAI_ENTERPRISE_API_KEY = os.getenv("CREWAI_ENTERPRISE_API_KEY")
+    CREWAI_ENTERPRISE_POLLING_RATE = int(
+        os.getenv("CREWAI_ENTERPRISE_POLLING_RATE", 10)
+    )
 
     def kickoff(self, id: str, input_file_base64: str):
         response = requests.post(
-            f"{self._URL}/kickoff",
+            f"{self.CREWAI_ENTERPRISE_URL}/kickoff",
             json={
                 "inputs": {
                     "id": id,
@@ -29,7 +31,7 @@ class CrewAiClient:
             while True:
                 try:
                     async with session.get(
-                        f"{self._URL}/status/{kickoff_id}",
+                        f"{self.CREWAI_ENTERPRISE_URL}/status/{kickoff_id}",
                         headers=self._headers,
                     ) as response:
                         response.raise_for_status()
@@ -41,7 +43,7 @@ class CrewAiClient:
                         print(
                             f"Status check performed for [kickoff_id='{kickoff_id}']. No final state reached yet."
                         )
-                        await asyncio.sleep(self._POLLING_RATE)
+                        await asyncio.sleep(self.CREWAI_ENTERPRISE_POLLING_RATE)
 
                 except Exception as e:
                     print(f"Error checking status: {e}")
@@ -49,4 +51,4 @@ class CrewAiClient:
 
     @property
     def _headers(self):
-        return {"Authorization": f"Bearer {self._API_KEY}"}
+        return {"Authorization": f"Bearer {self.CREWAI_ENTERPRISE_API_KEY}"}
