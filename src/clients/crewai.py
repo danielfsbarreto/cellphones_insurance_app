@@ -8,14 +8,13 @@ import requests
 class CrewAiClient:
     _URL = os.getenv("CREWAI_ENTERPRISE_URL")
     _API_KEY = os.getenv("CREWAI_ENTERPRISE_API_KEY")
-    _POLLING_RATE = int(os.getenv("CREWAI_ENTERPRISE_POLLING_RATE", 10))
+    _POLLING_RATE = int(os.getenv("CREWAI_ENTERPRISE_POLLING_RATE", 30))
 
-    def kickoff(self, id: str, input_file_base64: str):
+    def kickoff(self, input_file_base64: str):
         response = requests.post(
             f"{self._URL}/kickoff",
             json={
                 "inputs": {
-                    "id": id,
                     "input_file": input_file_base64,
                 }
             },
