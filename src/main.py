@@ -207,8 +207,8 @@ with st._bottom:
     )
 
 if st.session_state.file_uploader is not None:
-    celphones_spreadsheet = st.session_state.file_uploader.getvalue()
-    ExecutionsService().start_execution(celphones_spreadsheet)
+    cellphones_spreadsheet = st.session_state.file_uploader.getvalue()
+    ExecutionsService().start_execution(cellphones_spreadsheet)
     st.toast(
         "Execução iniciada! Recarregue a página para ver os resultados.",
         icon=":material/refresh:",

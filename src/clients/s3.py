@@ -26,26 +26,8 @@ class S3Client:
 
         s3_files = []
         for obj in contents:
-            if obj["Key"] != self.bucket_path:
-                try:
-                    file_response = self.s3.get_object(
-                        Bucket=self.bucket_name, Key=obj["Key"]
-                    )
-                    file_content = file_response["Body"].read()
-                except Exception as e:
-                    print(f"Error reading content for {obj['Key']}: {e}")
-                    file_content = None
-
-                s3_files.append(
-                    S3File(
-                        bucket=self.bucket_name,
-                        key=obj["Key"],
-                        uuid=self._extract_uuid(obj["Key"]),
-                        last_modified=obj["LastModified"],
-                        url=self._get_presigned_url(obj["Key"]),
-                        content=file_content,
-                    )
-                )
+            s3_file = self._get_s3_file(obj["Key"])
+            s3_files.append(s3_file)
 
         return s3_files
 
@@ -55,6 +37,7 @@ class S3Client:
         file_path = f"{self.bucket_path}{file_name}"
 
         self.s3.upload_fileobj(file_obj, self.bucket_name, file_path)
+        return self._get_s3_file(file_path)
 
     def _extract_uuid(self, key: str):
         uuid_match = re.search(
@@ -68,4 +51,16 @@ class S3Client:
             "get_object",
             Params={"Bucket": self.bucket_name, "Key": key},
             ExpiresIn=300,
+        )
+
+    def _get_s3_file(self, key: str):
+        file_response = self.s3.get_object(Bucket=self.bucket_name, Key=key)
+        file_content = file_response["Body"].read()
+        return S3File(
+            bucket=self.bucket_name,
+            key=key,
+            uuid=self._extract_uuid(key),
+            last_modified=file_response["LastModified"],
+            url=self._get_presigned_url(key),
+            content=file_content,
         )

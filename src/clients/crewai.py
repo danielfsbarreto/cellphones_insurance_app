@@ -1,7 +1,5 @@
-import asyncio
 import os
 
-import aiohttp
 import requests
 
 
@@ -23,28 +21,16 @@ class CrewAiClient:
         response.raise_for_status()
         return response.json()
 
-    async def status(self, kickoff_id: str):
-        async with aiohttp.ClientSession() as session:
-            while True:
-                try:
-                    async with session.get(
-                        f"{self._URL}/status/{kickoff_id}",
-                        headers=self._headers,
-                    ) as response:
-                        response.raise_for_status()
-                        response_json = await response.json()
-
-                        if response_json.get("state") in ["SUCCESS", "FAILED"]:
-                            return response_json
-
-                        print(
-                            f"Status check performed for [kickoff_id='{kickoff_id}']. No final state reached yet."
-                        )
-                        await asyncio.sleep(self._POLLING_RATE)
-
-                except Exception as e:
-                    print(f"Error checking status: {e}")
-                    await asyncio.sleep(self._POLLING_RATE)
+    def status(self, uuid: str):
+        response = requests.get(
+            f"{self._URL}/status/{uuid}",
+            headers=self._headers,
+        )
+        response.raise_for_status()
+        response_json = response.json()
+        if response_json.get("state") in ["SUCCESS"]:
+            return response_json
+        return None
 
     @property
     def _headers(self):
